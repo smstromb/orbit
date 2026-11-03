@@ -1,0 +1,13 @@
+Orbit/build/
+Orbit/scanner/target/
+.DS_Store
+
+# Local settings, scan captures, and generated files
+.env
+.env.*
+!.env.example
+*.local
+*.log
+*.sample
+__pycache__/
+*.pyc
