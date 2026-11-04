@@ -2,6 +2,10 @@
 
 A macOS disk explorer with a Rust scanner, a native SwiftUI sunburst, and Git worktree discovery for a repository you choose.
 
+![Orbit showing a radial disk map and folder sizes](docs/images/orbit.png)
+
+*Orbit showing synthetic sample data.*
+
 Requires Apple Silicon, macOS 14 or later, Xcode command-line tools, Python 3, and Rust 1.95.0.
 
 ```sh

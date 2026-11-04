@@ -2,6 +2,10 @@
 
 A personal macOS disk explorer with a Rust scanner and a native SwiftUI sunburst.
 
+![Orbit showing a radial disk map and folder sizes](../docs/images/orbit.png)
+
+*Orbit showing synthetic sample data.*
+
 Build with `bash scripts/build.sh`, verify with `python3 scripts/verify.py`, and launch `build/Orbit.app`.
 Requires Apple Silicon, macOS 14+, Xcode command-line tools, and Rust. The build script uses the existing Rust 1.95.0 toolchain without changing the machine's default. Override it with `ORBIT_RUST_TOOLCHAIN`.
 
@@ -30,3 +34,5 @@ Each checkout is measured independently with two concurrent sizing jobs and four
 Run `python3 scripts/verify_worktrees.py` for disposable real-Git discovery fixtures. No user repositories are modified by discovery or sizing. The chosen repository path is persisted; scan results remain in memory.
 
 Before publishing, run `python3 scripts/audit_privacy.py` from this directory. It checks Git-visible files and branch and tag history for credential patterns, user-specific absolute paths, and unexpected generated files. Use repeated `--deny` arguments for private names or identifiers; these values are never saved by the script. `--staged` checks the index rather than working files. Run `python3 scripts/verify_privacy.py` to exercise the audit with disposable fixtures. Build outputs, local scan data, and local settings are excluded by `.gitignore`. This check is a guardrail, not a guarantee that arbitrary personal information can be detected automatically.
+
+To recreate the screenshot preview, build the app, then run `python3 scripts/build_readme_preview.py` and open `build/Orbit Preview.app`. This separate bundle uses the production UI with synthetic scanner and volume fixtures. Screenshot pixels must be reviewed before updating their approved hash in the privacy audit.

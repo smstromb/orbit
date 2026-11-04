@@ -46,11 +46,13 @@ def main():
             if at >= 0:
                 failures.append((label, data[:at].count(b"\n") + 1, "private deny-list value"))
 
+    # This exact sample-data screenshot was visually reviewed before publication.
+    reviewed_images = {"docs/images/orbit.png": "be124685ae9fe9b72fc07b014506a753dc566d97f344750f686540d443d2e2e7"}
     allowed = {".swift", ".rs", ".py", ".sh", ".md", ".toml", ".lock"}
     for path in paths:
         inspect("file name", path.encode())
         p = pathlib.Path(path)
-        if path != ".gitignore" and p.suffix not in allowed:
+        if path != ".gitignore" and path not in reviewed_images and p.suffix not in allowed:
             failures.append((path, 0, "unexpected publication file type"))
         if any(part in {"build", "target", "node_modules", ".env", ".aws", ".ssh"} for part in p.parts):
             failures.append((path, 0, "local or generated data included"))
@@ -58,6 +60,11 @@ def main():
         if p.is_symlink() or stage.startswith((b"120000 ", b"160000 ")):
             failures.append((path, 0, "symlink or submodule requires manual audit")); continue
         data = git("show", ":" + path) if args.staged else p.read_bytes()
+        if path in reviewed_images:
+            if hashlib.sha256(data).hexdigest() != reviewed_images[path]:
+                failures.append((path, 0, "image changed; repeat visual privacy review"))
+            examined.add(data)
+            continue
         if b"\0" in data:
             failures.append((path, 0, "binary data requires manual audit"))
         inspect(path, data)
@@ -78,6 +85,8 @@ def main():
                     failures.append(("history " + oid[:12].decode(), 0, "symlink or submodule requires manual audit"))
         elif kind in (b"blob", b"commit", b"tag"):
             data = git("cat-file", "-p", oid.decode())
+            if kind == b"blob" and hashlib.sha256(data).hexdigest() in reviewed_images.values():
+                continue
             if kind == b"blob" and b"\0" in data:
                 failures.append(("history " + oid[:12].decode(), 0, "binary data requires manual audit"))
             if data not in examined:

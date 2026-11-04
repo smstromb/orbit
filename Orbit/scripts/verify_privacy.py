@@ -63,6 +63,12 @@ with tempfile.TemporaryDirectory(prefix="orbit-privacy-test-") as folder:
     git("commit", "-m", "Remove named fixture")
     output = audit("--deny", private_name, passes=False)
     assert "history filename " in output and private_name not in output
+    image = root / "docs/images/orbit.png"
+    image.parent.mkdir(parents=True)
+    image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"unreviewed image")
+    output = audit(passes=False)
+    assert "image changed; repeat visual privacy review" in output
+    image.unlink()
     git("add", "-f", ".env")
     audit("--staged", passes=False)
 
